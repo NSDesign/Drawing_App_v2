@@ -1,0 +1,34 @@
+modern-drawing-app/
+├── index.html
+├── package.json
+├── README.md
+├── src/
+│   ├── styles/
+│   │   ├── main.css
+│   │   └── components.css
+│   ├── js/
+│   │   ├── core/
+│   │   │   ├── EventEmitter.js
+│   │   │   ├── Shape.js
+│   │   │   └── CanvasState.js
+│   │   ├── shapes/
+│   │   │   ├── Rectangle.js
+│   │   │   ├── Ellipse.js
+│   │   │   └── Line.js
+│   │   ├── renderers/
+│   │   │   ├── CanvasRenderer.js
+│   │   │   └── GridRenderer.js
+│   │   ├── tools/
+│   │   │   ├── BaseTool.js
+│   │   │   ├── SelectTool.js
+│   │   │   ├── RectangleTool.js
+│   │   │   ├── EllipseTool.js
+│   │   │   ├── LineTool.js
+│   │   │   ├── PanTool.js
+│   │   │   └── ToolManager.js
+│   │   ├── ui/
+│   │   │   └── PropertiesPanel.js
+│   │   └── DrawingApp.js
+│   └── assets/
+│       └── icons/
+└── dist/ (generated)

@@ -1,0 +1,8 @@
+Instructions
+Copy each file's content to its corresponding location in your project structure. All files use ES6 modules and work together to create the complete drawing application.
+Once all files are in place, you can:
+
+Open index.html in a modern browser, or
+Run npm install and npm run dev for development server
+
+The app includes working select, rectangle, ellipse, line, and pan tools with a properties panel and grid system.
