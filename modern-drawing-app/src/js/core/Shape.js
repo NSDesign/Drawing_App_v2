@@ -1,5 +1,10 @@
 import { EventEmitter } from './EventEmitter.js';
 
+/**
+ * Shape class representing a drawable shape in the canvas.
+ * This class serves as a base for specific shape types like Rectangle, Circle, etc.
+ * It provides properties and methods common to all shapes.
+ */  
 export class Shape extends EventEmitter {
     constructor(type, x = 0, y = 0) {
         super();
