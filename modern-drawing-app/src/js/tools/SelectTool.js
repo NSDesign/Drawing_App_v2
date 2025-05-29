@@ -1,4 +1,3 @@
-// Update to SelectTool.js - Enhanced with marquee selection
 import { BaseTool } from './BaseTool.js';
 import { MoveShapeCommand } from '../commands/MoveShapeCommand.js';
 
@@ -12,6 +11,7 @@ export class SelectTool extends BaseTool {
         this.marqueeEnd = null;
         this.isMarquee = false;
         this.originalPositions = [];
+        this.isDragging = false;
     }
 
     onMouseDown(e) {
@@ -25,9 +25,11 @@ export class SelectTool extends BaseTool {
             }
             this.state.selectShape(shape, e.shiftKey);
             
-            // Store original positions for undo
+            // Store original positions for undo - fix the mapping issue
             this.originalPositions = Array.from(this.state.selectedShapes).map(s => ({
-                x: s.x, y: s.y
+                shape: s,
+                x: s.x, 
+                y: s.y
             }));
             
             this.dragStartPos = pos;
@@ -35,6 +37,7 @@ export class SelectTool extends BaseTool {
                 x: pos.x - shape.x,
                 y: pos.y - shape.y
             };
+            this.isDragging = true;
             this.isDrawing = true;
         } else {
             // Start marquee selection
@@ -54,18 +57,17 @@ export class SelectTool extends BaseTool {
         if (this.isMarquee) {
             // Update marquee rectangle
             this.marqueeEnd = pos;
-            this.updateMarqueeSelection();
-            this.renderer.render(); // Force re-render to show marquee
-        } else if (this.isDrawing && this.state.selectedShapes.size > 0) {
-            // Drag selected shapes
+            this.updateMarqueeSelection(e);
+            this.renderer.render();
+        } else if (this.isDragging && this.state.selectedShapes.size > 0) {
+            // Drag selected shapes - fix the position calculation
             const dx = pos.x - this.dragStartPos.x;
             const dy = pos.y - this.dragStartPos.y;
             
-            this.state.selectedShapes.forEach(shape => {
-                shape.setPosition(
-                    this.originalPositions.find(p => p === shape)?.x + dx || shape.x,
-                    this.originalPositions.find(p => p === shape)?.y + dy || shape.y
-                );
+            this.originalPositions.forEach((posData, index) => {
+                const newX = posData.x + dx;
+                const newY = posData.y + dy;
+                posData.shape.setPosition(newX, newY);
             });
         }
     }
@@ -75,28 +77,32 @@ export class SelectTool extends BaseTool {
             this.isMarquee = false;
             this.marqueeStart = null;
             this.marqueeEnd = null;
-        } else if (this.isDrawing && this.originalPositions.length > 0) {
-            // Create move command for undo
-            const newPositions = Array.from(this.state.selectedShapes).map(s => ({
-                x: s.x, y: s.y
-            }));
+        } else if (this.isDragging && this.originalPositions.length > 0) {
+            // Create move command for undo - fix the position arrays
+            const shapes = this.originalPositions.map(p => p.shape);
+            const oldPositions = this.originalPositions.map(p => ({ x: p.x, y: p.y }));
+            const newPositions = shapes.map(s => ({ x: s.x, y: s.y }));
             
-            const command = new MoveShapeCommand(
-                Array.from(this.state.selectedShapes),
-                this.originalPositions,
-                newPositions
+            // Only create command if shapes actually moved
+            const moved = oldPositions.some((oldPos, i) => 
+                oldPos.x !== newPositions[i].x || oldPos.y !== newPositions[i].y
             );
-            this.commandManager.execute(command);
+            
+            if (moved) {
+                const command = new MoveShapeCommand(shapes, oldPositions, newPositions);
+                this.commandManager.execute(command);
+            }
         }
         
         this.isDrawing = false;
+        this.isDragging = false;
         this.dragStartPos = null;
         this.dragOffset = null;
         this.originalPositions = [];
         this.renderer.render();
     }
 
-    updateMarqueeSelection() {
+    updateMarqueeSelection(e) {
         if (!this.marqueeStart || !this.marqueeEnd) return;
         
         const minX = Math.min(this.marqueeStart.x, this.marqueeEnd.x);
@@ -118,14 +124,14 @@ export class SelectTool extends BaseTool {
                 shape.setSelected(false);
             }
         });
+        
+        this.state.emit('selectionChanged');
     }
 
     renderMarquee(ctx) {
         if (!this.isMarquee || !this.marqueeStart || !this.marqueeEnd) return;
         
         ctx.save();
-        ctx.scale(this.state.zoom, this.state.zoom);
-        ctx.translate(this.state.panX, this.state.panY);
         
         const x = Math.min(this.marqueeStart.x, this.marqueeEnd.x);
         const y = Math.min(this.marqueeStart.y, this.marqueeEnd.y);
@@ -146,70 +152,3 @@ export class SelectTool extends BaseTool {
         ctx.restore();
     }
 }
-
-
-
-
-
-
-
-
-
-
-// Update to CanvasRenderer.js - Add marquee rendering in render method
-/*
-Add this line at the end of the render() method:
-
-// Render marquee selection if active
-if (this.state.currentTool === 'select') {
-    const selectTool = this.toolManager?.tools?.get('select');
-    if (selectTool && selectTool.isMarquee) {
-        selectTool.renderMarquee(this.ctx);
-    }
-}
-*/
-
-// Keyboard shortcuts for copy/paste (add to DrawingApp.js bindUIEvents)
-/*
-case 'c':
-    if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        this.clipboardManager.copy();
-        this.updateStatusText('Copied to clipboard');
-    }
-    break;
-case 'v':
-    if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        if (this.clipboardManager.paste()) {
-            this.updateStatusText('Pasted from clipboard');
-        }
-    }
-    break;
-case 'x':
-    if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        if (this.clipboardManager.cut()) {
-            this.updateStatusText('Cut to clipboard');
-        }
-    }
-    break;
-case 'd':
-    if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        if (this.clipboardManager.duplicate()) {
-            this.updateStatusText('Duplicated selection');
-        }
-    }
-    break;
-case 'z':
-    if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        if (e.shiftKey) {
-            this.commandManager.redo();
-        } else {
-            this.commandManager.undo();
-        }
-    }
-    break;
-*/
