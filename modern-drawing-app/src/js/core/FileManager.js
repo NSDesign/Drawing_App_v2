@@ -41,7 +41,15 @@ export class FileManager {
                     fontFamily: shape.fontFamily,
                     textAlign: shape.textAlign,
                     textBaseline: shape.textBaseline
-                })
+                }),
+(shape.type === 'bezier' && {
+    endX: shape.endX,
+    endY: shape.endY,
+    cp1X: shape.cp1X,
+    cp1Y: shape.cp1Y,
+    cp2X: shape.cp2X,
+    cp2Y: shape.cp2Y
+})
             }))
         };
         
@@ -99,6 +107,13 @@ export class FileManager {
             case 'line':
                 shape = new Line(data.x, data.y, data.x2, data.y2);
                 break;
+case 'bezier':
+    shape = new BezierCurve(data.x, data.y, data.endX, data.endY);
+    shape.cp1X = data.cp1X;
+    shape.cp1Y = data.cp1Y;
+    shape.cp2X = data.cp2X;
+    shape.cp2Y = data.cp2Y;
+    break;
             case 'text':
                 shape = new Text(data.x, data.y, data.text, data.fontSize);
                 shape.fontFamily = data.fontFamily;

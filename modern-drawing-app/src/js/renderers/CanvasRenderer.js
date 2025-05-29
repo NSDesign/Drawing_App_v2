@@ -41,6 +41,62 @@ if (this.state.currentTool === 'select') {
         selectTool.renderMarquee(this.ctx);
     }
 }
+
+renderBezierControlPoints(shape) {
+    this.ctx.save();
+    
+    // Control lines
+    this.ctx.strokeStyle = 'rgba(25, 118, 210, 0.5)';
+    this.ctx.lineWidth = 1 / this.state.zoom;
+    this.ctx.setLineDash([5 / this.state.zoom, 5 / this.state.zoom]);
+    
+    // Line from start to cp1
+    this.ctx.beginPath();
+    this.ctx.moveTo(shape.x, shape.y);
+    this.ctx.lineTo(shape.cp1X, shape.cp1Y);
+    this.ctx.stroke();
+    
+    // Line from cp2 to end
+    this.ctx.beginPath();
+    this.ctx.moveTo(shape.cp2X, shape.cp2Y);
+    this.ctx.lineTo(shape.endX, shape.endY);
+    this.ctx.stroke();
+    
+    this.ctx.setLineDash([]);
+    
+    // Control points
+    const pointSize = 6 / this.state.zoom;
+    this.ctx.fillStyle = '#1976d2';
+    this.ctx.strokeStyle = 'white';
+    this.ctx.lineWidth = 2 / this.state.zoom;
+    
+    // Start point
+    this.ctx.beginPath();
+    this.ctx.arc(shape.x, shape.y, pointSize, 0, 2 * Math.PI);
+    this.ctx.fill();
+    this.ctx.stroke();
+    
+    // End point
+    this.ctx.beginPath();
+    this.ctx.arc(shape.endX, shape.endY, pointSize, 0, 2 * Math.PI);
+    this.ctx.fill();
+    this.ctx.stroke();
+    
+    // Control point 1
+    this.ctx.fillStyle = '#ff9800';
+    this.ctx.beginPath();
+    this.ctx.arc(shape.cp1X, shape.cp1Y, pointSize, 0, 2 * Math.PI);
+    this.ctx.fill();
+    this.ctx.stroke();
+    
+    // Control point 2
+    this.ctx.beginPath();
+    this.ctx.arc(shape.cp2X, shape.cp2Y, pointSize, 0, 2 * Math.PI);
+    this.ctx.fill();
+    this.ctx.stroke();
+    
+    this.ctx.restore();
+}
     }
 
     clear() {
@@ -91,6 +147,7 @@ if (this.state.currentTool === 'select') {
                 this.ctx.lineTo(shape.x2, shape.y2);
                 this.ctx.stroke();
                 break;
+
 case 'text':
     this.ctx.font = `${shape.fontSize}px ${shape.fontFamily}`;
     this.ctx.textAlign = shape.textAlign;
@@ -111,6 +168,23 @@ case 'text':
         this.ctx.strokeStyle = shape.strokeColor;
         this.ctx.lineWidth = shape.strokeWidth;
         this.ctx.strokeText(shape.text, shape.x, shape.y);
+    }
+    break;
+
+case 'bezier':
+    // Draw the curve
+    this.ctx.beginPath();
+    this.ctx.moveTo(shape.x, shape.y);
+    this.ctx.bezierCurveTo(
+        shape.cp1X, shape.cp1Y,
+        shape.cp2X, shape.cp2Y,
+        shape.endX, shape.endY
+    );
+    this.ctx.stroke();
+    
+    // Draw control points and lines if selected
+    if (shape.showControlPoints || shape.selected) {
+        this.renderBezierControlPoints(shape);
     }
     break;
         }

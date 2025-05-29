@@ -25,6 +25,7 @@ export class ToolManager extends EventEmitter {
         this.tools.set('line', new LineTool(this.state, this.renderer, this.commandManager));
         this.tools.set('text', new TextTool(this.state, this.renderer, this.commandManager));
         this.tools.set('pan', new PanTool(this.state, this.renderer));
+this.tools.set('bezier', new BezierTool(this.state, this.renderer, this.commandManager));
     }
 
     bindEvents() {
