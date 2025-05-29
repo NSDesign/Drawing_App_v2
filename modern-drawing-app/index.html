@@ -3,110 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Drawing Application</title>
+    <title>Modern Drawing App</title>
     <link rel="stylesheet" href="src/styles/main.css">
+    <link rel="stylesheet" href="src/styles/components.css">
 </head>
 <body>
-    <!-- Main Menu -->
-    <nav class="main-menu" id="mainMenu">
-        <div class="menu-header">
-            <h2>File</h2>
-        </div>
-        <div class="menu-content hidden" id="mainMenuContent">
-            <button class="menu-item" data-action="new">New</button>
-            <button class="menu-item" data-action="open">Open</button>
-            <button class="menu-item" data-action="save">Save</button>
-            <button class="menu-item" data-action="save-as">Save As</button>
-            <button class="menu-item" data-action="export">Export</button>
-        </div>
-    </nav>
-
-    <!-- Toolbar -->
-    <aside class="toolbar" id="toolbar">
-        <div class="tool-section" data-section="select">
-            <button class="tool-button active" data-tool="select-object" title="Select Object (Q)">
+    <div class="app-container">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button class="tool-button active" data-tool="select" title="Select">
                 <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M2 2h20v20H2z"/>
+                    <path d="M2 2l7.5 7.5L6 13l-4-4V2z"/>
                 </svg>
             </button>
-            <button class="tool-button" data-tool="select-element" title="Select Element (W)">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2l-2 2h4l-2-2zm0 20l2-2h-4l2 2zm-10-10l2-2v4l-2-2zm20 0l-2 2v-4l2 2z"/>
-                </svg>
-            </button>
-        </div>
-
-        <div class="tool-section" data-section="create">
-            <button class="tool-button" data-tool="create-rectangle" title="Create Rectangle (R)">
-                <svg viewBox="0 0 24 24" fill="currentColor">
+            
+            <button class="tool-button" data-tool="rectangle" title="Rectangle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="3" width="18" height="18" rx="2"/>
                 </svg>
             </button>
-            <button class="tool-button" data-tool="create-ellipse" title="Create Ellipse (E)">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <ellipse cx="12" cy="12" rx="9" ry="6"/>
+            
+            <button class="tool-button" data-tool="ellipse" title="Ellipse">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"/>
                 </svg>
             </button>
-            <button class="tool-button" data-tool="create-line" title="Create Line (L)">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <line x1="3" y1="21" x2="21" y2="3" stroke="currentColor" stroke-width="2"/>
+            
+            <button class="tool-button" data-tool="line" title="Line">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="6" y1="18" x2="18" y2="6"/>
                 </svg>
             </button>
-            <button class="tool-button" data-tool="create-text" title="Create Text (T)">
+            
+            <button class="tool-button" data-tool="text" title="Text">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4,7 4,4 20,4 20,7"/>
+                    <line x1="9" y1="20" x2="15" y2="20"/>
+                    <line x1="12" y1="4" x2="12" y2="20"/>
+                </svg>
+            </button>
+
+            <div class="separator"></div>
+            
+            <button class="tool-button" data-tool="pan" title="Pan">
                 <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M4 4h16v4h-2V6H6v12h4v2H4V4z"/>
+                    <path d="M13,6V11H18V7.75L22.25,12L18,16.25V13H13V18H16.25L12,22.25L7.75,18H11V13H6V16.25L1.75,12L6,7.75V11H11V6H7.75L12,1.75L16.25,6H13Z"/>
                 </svg>
             </button>
         </div>
 
-        <div class="tool-section" data-section="canvas">
-            <button class="tool-button" data-tool="zoom" title="Zoom (Z)">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="21 21l-4.35-4.35"/>
-                    <line x1="8" y1="11" x2="14" y2="11"/>
-                    <line x1="11" y1="8" x2="11" y2="14"/>
-                </svg>
-            </button>
-            <button class="tool-button" data-tool="pan" title="Pan (P)">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2l-2 2 2 2 2-2-2-2zM2 12l2-2 2 2-2 2-2-2zm20 0l-2 2-2-2 2-2 2 2zM12 22l2-2-2-2-2 2 2 2z"/>
-                </svg>
-            </button>
-        </div>
-    </aside>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="logo">DrawApp</div>
+                <div class="zoom-controls">
+                    <button class="zoom-button" id="zoom-out" title="Zoom Out">-</button>
+                    <span id="zoom-level">100%</span>
+                    <button class="zoom-button" id="zoom-in" title="Zoom In">+</button>
+                </div>
+            </div>
 
-    <!-- Properties Panel -->
-    <aside class="properties-panel" id="propertiesPanel">
-        <div class="panel-header">
-            <h3>Properties</h3>
-        </div>
-        <div class="panel-content" id="propertiesContent">
-            <!-- Dynamic content will be inserted here -->
-        </div>
-    </aside>
+            <!-- Canvas Container -->
+            <div class="canvas-container">
+                <div class="canvas-wrapper">
+                    <canvas id="grid-canvas"></canvas>
+                    <canvas id="main-canvas"></canvas>
+                    <canvas id="overlay-canvas"></canvas>
+                </div>
+            </div>
 
-    <!-- Canvas Container -->
-    <main class="canvas-container" id="canvasContainer">
-        <canvas id="gridCanvas" class="canvas-layer"></canvas>
-        <canvas id="drawCanvas" class="canvas-layer"></canvas>
-        <canvas id="overlayCanvas" class="canvas-layer"></canvas>
-    </main>
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span id="cursor-position">0, 0</span>
+                <span style="margin-left: auto;" id="status-text">Ready</span>
+            </div>
+        </div>
 
-    <!-- Status Bar -->
-    <footer class="status-bar" id="statusBar">
-        <div class="status-section">
-            <span id="mousePosition">x: 0, y: 0</span>
+        <!-- Properties Panel -->
+        <div class="properties-panel" id="properties-panel">
+            <div class="property-group">
+                <div class="property-label">Fill</div>
+                <input type="color" class="color-picker" id="fill-color" value="#ffffff">
+            </div>
+            
+            <div class="property-group">
+                <div class="property-label">Stroke</div>
+                <input type="color" class="color-picker" id="stroke-color" value="#000000">
+                <input type="range" class="property-input" id="stroke-width" min="1" max="10" value="2" style="margin-top: 8px;">
+            </div>
+            
+            <div class="property-group">
+                <div class="property-label">Position</div>
+                <input type="number" class="property-input" id="pos-x" placeholder="X" style="margin-bottom: 8px;">
+                <input type="number" class="property-input" id="pos-y" placeholder="Y">
+            </div>
+            
+            <div class="property-group">
+                <div class="property-label">Size</div>
+                <input type="number" class="property-input" id="size-width" placeholder="Width" style="margin-bottom: 8px;">
+                <input type="number" class="property-input" id="size-height" placeholder="Height">
+            </div>
         </div>
-        <div class="status-section">
-            <span id="canvasSize">Canvas: 800 x 600</span>
-        </div>
-        <div class="status-section">
-            <span id="zoomLevel">Zoom: 100%</span>
-        </div>
-    </footer>
+    </div>
 
-    <!-- JavaScript Modules -->
-    <script type="module" src="src/js/main.js"></script>
+    <!-- Load Core Scripts -->
+    <script type="module" src="src/js/core/EventEmitter.js"></script>
+    <script type="module" src="src/js/core/Shape.js"></script>
+    <script type="module" src="src/js/shapes/Rectangle.js"></script>
+    <script type="module" src="src/js/shapes/Ellipse.js"></script>
+    <script type="module" src="src/js/shapes/Line.js"></script>
+    <script type="module" src="src/js/core/CanvasState.js"></script>
+    <script type="module" src="src/js/renderers/CanvasRenderer.js"></script>
+    <script type="module" src="src/js/renderers/GridRenderer.js"></script>
+    <script type="module" src="src/js/tools/BaseTool.js"></script>
+    <script type="module" src="src/js/tools/SelectTool.js"></script>
+    <script type="module" src="src/js/tools/RectangleTool.js"></script>
+    <script type="module" src="src/js/tools/EllipseTool.js"></script>
+    <script type="module" src="src/js/tools/LineTool.js"></script>
+    <script type="module" src="src/js/tools/PanTool.js"></script>
+    <script type="module" src="src/js/tools/ToolManager.js"></script>
+    <script type="module" src="src/js/ui/PropertiesPanel.js"></script>
+    <script type="module" src="src/js/DrawingApp.js"></script>
 </body>
 </html>
