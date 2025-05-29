@@ -1,9 +1,11 @@
 import { BaseTool } from './BaseTool.js';
 import { Line } from '../shapes/Line.js';
+import { AddShapeCommand } from '../commands/AddShapeCommand.js';
 
 export class LineTool extends BaseTool {
-    constructor(state, renderer) {
+    constructor(state, renderer, commandManager) {
         super(state, renderer);
+        this.commandManager = commandManager;
         this.currentShape = null;
     }
 
@@ -24,6 +26,12 @@ export class LineTool extends BaseTool {
     }
 
     onMouseUp(e) {
+        if (this.currentShape) {
+            this.state.removeShape(this.currentShape.id);
+            const command = new AddShapeCommand(this.state, this.currentShape);
+            this.commandManager.execute(command);
+        }
+        
         this.isDrawing = false;
         this.currentShape = null;
     }

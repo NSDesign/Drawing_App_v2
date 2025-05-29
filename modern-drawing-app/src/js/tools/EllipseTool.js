@@ -1,9 +1,11 @@
 import { BaseTool } from './BaseTool.js';
 import { Ellipse } from '../shapes/Ellipse.js';
+import { AddShapeCommand } from '../commands/AddShapeCommand.js';
 
 export class EllipseTool extends BaseTool {
-    constructor(state, renderer) {
+    constructor(state, renderer, commandManager) {
         super(state, renderer);
+        this.commandManager = commandManager;
         this.startPos = null;
         this.currentShape = null;
     }
@@ -31,11 +33,17 @@ export class EllipseTool extends BaseTool {
     }
 
     onMouseUp(e) {
-        if (this.currentShape && (this.currentShape.radiusX < 5 || this.currentShape.radiusY < 5)) {
-            this.currentShape.radiusX = Math.max(this.currentShape.radiusX, 25);
-            this.currentShape.radiusY = Math.max(this.currentShape.radiusY, 25);
-            this.currentShape.emit('changed', this.currentShape);
+        if (this.currentShape) {
+            if (this.currentShape.radiusX < 5 || this.currentShape.radiusY < 5) {
+                this.currentShape.radiusX = Math.max(this.currentShape.radiusX, 25);
+                this.currentShape.radiusY = Math.max(this.currentShape.radiusY, 25);
+            }
+            
+            this.state.removeShape(this.currentShape.id);
+            const command = new AddShapeCommand(this.state, this.currentShape);
+            this.commandManager.execute(command);
         }
+        
         this.isDrawing = false;
         this.currentShape = null;
         this.startPos = null;
