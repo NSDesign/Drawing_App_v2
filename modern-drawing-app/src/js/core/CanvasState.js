@@ -12,6 +12,7 @@ export class CanvasState extends EventEmitter {
         this.currentTool = 'select';
         this.gridVisible = true;
         this.gridSize = 20;
+this.snapToGrid = true;
     }
 
     addShape(shape) {

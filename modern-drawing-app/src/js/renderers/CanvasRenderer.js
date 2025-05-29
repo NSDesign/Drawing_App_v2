@@ -34,6 +34,13 @@ export class CanvasRenderer {
         this.applyTransform();
         this.renderShapes();
         this.renderSelection();
+// Render marquee selection if active
+if (this.state.currentTool === 'select') {
+    const selectTool = this.toolManager?.tools?.get('select');
+    if (selectTool && selectTool.isMarquee) {
+        selectTool.renderMarquee(this.ctx);
+    }
+}
     }
 
     clear() {
@@ -84,6 +91,28 @@ export class CanvasRenderer {
                 this.ctx.lineTo(shape.x2, shape.y2);
                 this.ctx.stroke();
                 break;
+case 'text':
+    this.ctx.font = `${shape.fontSize}px ${shape.fontFamily}`;
+    this.ctx.textAlign = shape.textAlign;
+    this.ctx.textBaseline = shape.textBaseline;
+    this.ctx.fillStyle = shape.fillColor;
+    
+    if (shape.editing) {
+        // Draw selection background for editing text
+        const bounds = shape.getBounds();
+        this.ctx.fillStyle = 'rgba(25, 118, 210, 0.1)';
+        this.ctx.fillRect(bounds.x - 2, bounds.y - 2, bounds.width + 4, bounds.height + 4);
+        this.ctx.fillStyle = shape.fillColor;
+    }
+    
+    this.ctx.fillText(shape.text, shape.x, shape.y);
+    
+    if (shape.strokeWidth > 0 && shape.strokeColor !== 'transparent') {
+        this.ctx.strokeStyle = shape.strokeColor;
+        this.ctx.lineWidth = shape.strokeWidth;
+        this.ctx.strokeText(shape.text, shape.x, shape.y);
+    }
+    break;
         }
 
         this.ctx.restore();

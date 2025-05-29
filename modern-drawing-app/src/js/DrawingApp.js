@@ -171,43 +171,46 @@ class EnhancedDrawingApp {
                     break;
                     
                 case 'c':
-                    if (e.ctrlKey || e.metaKey) {
-                        e.preventDefault();
-                        this.copy();
-                    }
-                    break;
-                    
-                case 'v':
-                    if (e.ctrlKey || e.metaKey) {
-                        e.preventDefault();
-                        this.paste();
-                    }
-                    break;
-                    
-                case 'x':
-                    if (e.ctrlKey || e.metaKey) {
-                        e.preventDefault();
-                        this.cut();
-                    }
-                    break;
-                    
-                case 'd':
-                    if (e.ctrlKey || e.metaKey) {
-                        e.preventDefault();
-                        this.duplicate();
-                    }
-                    break;
-                    
-                case 'z':
-                    if (e.ctrlKey || e.metaKey) {
-                        e.preventDefault();
-                        if (e.shiftKey) {
-                            this.commandManager.redo();
-                        } else {
-                            this.commandManager.undo();
-                        }
-                    }
-                    break;
+    if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        this.clipboardManager.copy();
+        this.updateStatusText('Copied to clipboard');
+    }
+    break;
+case 'v':
+    if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        if (this.clipboardManager.paste()) {
+            this.updateStatusText('Pasted from clipboard');
+        }
+    }
+    break;
+case 'x':
+    if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        if (this.clipboardManager.cut()) {
+            this.updateStatusText('Cut to clipboard');
+        }
+    }
+    break;
+case 'd':
+    if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        if (this.clipboardManager.duplicate()) {
+            this.updateStatusText('Duplicated selection');
+        }
+    }
+    break;
+case 'z':
+    if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        if (e.shiftKey) {
+            this.commandManager.redo();
+        } else {
+            this.commandManager.undo();
+        }
+    }
+    break;
                     
                 case 's':
                     if (e.ctrlKey || e.metaKey) {
