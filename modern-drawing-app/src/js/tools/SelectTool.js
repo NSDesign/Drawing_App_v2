@@ -25,12 +25,16 @@ export class SelectTool extends BaseTool {
             }
             this.state.selectShape(shape, e.shiftKey);
             
-            // Store original positions for undo - fix the mapping issue
-            this.originalPositions = Array.from(this.state.selectedShapes).map(s => ({
-                shape: s,
-                x: s.x, 
-                y: s.y
-            }));
+            // Store original positions for undo - including line endpoints
+            this.originalPositions = Array.from(this.state.selectedShapes).map(s => {
+                const pos = { shape: s, x: s.x, y: s.y };
+                // Store line endpoints separately
+                if (s.type === 'line') {
+                    pos.x2 = s.x2;
+                    pos.y2 = s.y2;
+                }
+                return pos;
+            });
             
             this.dragStartPos = pos;
             this.dragOffset = {
@@ -60,14 +64,26 @@ export class SelectTool extends BaseTool {
             this.updateMarqueeSelection(e);
             this.renderer.render();
         } else if (this.isDragging && this.state.selectedShapes.size > 0) {
-            // Drag selected shapes - fix the position calculation
+            // Drag selected shapes - handle lines specially
             const dx = pos.x - this.dragStartPos.x;
             const dy = pos.y - this.dragStartPos.y;
             
             this.originalPositions.forEach((posData, index) => {
-                const newX = posData.x + dx;
-                const newY = posData.y + dy;
-                posData.shape.setPosition(newX, newY);
+                const shape = posData.shape;
+                
+                if (shape.type === 'line') {
+                    // Move both endpoints of the line
+                    shape.x = posData.x + dx;
+                    shape.y = posData.y + dy;
+                    shape.x2 = posData.x2 + dx;
+                    shape.y2 = posData.y2 + dy;
+                    shape.emit('changed', shape);
+                } else {
+                    // Standard position update for other shapes
+                    const newX = posData.x + dx;
+                    const newY = posData.y + dy;
+                    shape.setPosition(newX, newY);
+                }
             });
         }
     }
@@ -78,15 +94,32 @@ export class SelectTool extends BaseTool {
             this.marqueeStart = null;
             this.marqueeEnd = null;
         } else if (this.isDragging && this.originalPositions.length > 0) {
-            // Create move command for undo - fix the position arrays
+            // Create move command for undo - handle lines properly
             const shapes = this.originalPositions.map(p => p.shape);
-            const oldPositions = this.originalPositions.map(p => ({ x: p.x, y: p.y }));
-            const newPositions = shapes.map(s => ({ x: s.x, y: s.y }));
+            const oldPositions = this.originalPositions.map(p => {
+                const pos = { x: p.x, y: p.y };
+                if (p.shape.type === 'line') {
+                    pos.x2 = p.x2;
+                    pos.y2 = p.y2;
+                }
+                return pos;
+            });
+            const newPositions = shapes.map(s => {
+                const pos = { x: s.x, y: s.y };
+                if (s.type === 'line') {
+                    pos.x2 = s.x2;
+                    pos.y2 = s.y2;
+                }
+                return pos;
+            });
             
             // Only create command if shapes actually moved
-            const moved = oldPositions.some((oldPos, i) => 
-                oldPos.x !== newPositions[i].x || oldPos.y !== newPositions[i].y
-            );
+            const moved = oldPositions.some((oldPos, i) => {
+                const newPos = newPositions[i];
+                if (oldPos.x !== newPos.x || oldPos.y !== newPos.y) return true;
+                if (shapes[i].type === 'line' && (oldPos.x2 !== newPos.x2 || oldPos.y2 !== newPos.y2)) return true;
+                return false;
+            });
             
             if (moved) {
                 const command = new MoveShapeCommand(shapes, oldPositions, newPositions);
