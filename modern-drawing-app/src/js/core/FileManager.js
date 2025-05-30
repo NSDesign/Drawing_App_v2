@@ -6,51 +6,51 @@ export class FileManager {
 
     saveToJSON() {
         const data = {
-            version: '1.0',
-            timestamp: new Date().toISOString(),
-            viewport: {
-                zoom: this.state.zoom,
-                panX: this.state.panX,
-                panY: this.state.panY
-            },
-            shapes: Array.from(this.state.shapes.values()).map(shape => ({
-                id: shape.id,
-                type: shape.type,
-                x: shape.x,
-                y: shape.y,
-                fillColor: shape.fillColor,
-                strokeColor: shape.strokeColor,
-                strokeWidth: shape.strokeWidth,
-                zIndex: shape.zIndex,
-                // Shape-specific properties
-                ...(shape.type === 'rectangle' && {
-                    width: shape.width,
-                    height: shape.height
-                }),
-                ...(shape.type === 'ellipse' && {
-                    radiusX: shape.radiusX,
-                    radiusY: shape.radiusY
-                }),
-                ...(shape.type === 'line' && {
-                    x2: shape.x2,
-                    y2: shape.y2
-                }),
-                ...(shape.type === 'text' && {
-                    text: shape.text,
-                    fontSize: shape.fontSize,
-                    fontFamily: shape.fontFamily,
-                    textAlign: shape.textAlign,
-                    textBaseline: shape.textBaseline
-                }),
-(shape.type === 'bezier' && {
-    endX: shape.endX,
-    endY: shape.endY,
-    cp1X: shape.cp1X,
-    cp1Y: shape.cp1Y,
-    cp2X: shape.cp2X,
-    cp2Y: shape.cp2Y
-})
-            }))
+          version: "1.0",
+          timestamp: new Date().toISOString(),
+          viewport: {
+            zoom: this.state.zoom,
+            panX: this.state.panX,
+            panY: this.state.panY,
+          },
+          shapes: Array.from(this.state.shapes.values()).map((shape) => ({
+            id: shape.id,
+            type: shape.type,
+            x: shape.x,
+            y: shape.y,
+            fillColor: shape.fillColor,
+            strokeColor: shape.strokeColor,
+            strokeWidth: shape.strokeWidth,
+            zIndex: shape.zIndex,
+            // Shape-specific properties
+            ...(shape.type === "rectangle" && {
+              width: shape.width,
+              height: shape.height,
+            }),
+            ...(shape.type === "ellipse" && {
+              radiusX: shape.radiusX,
+              radiusY: shape.radiusY,
+            }),
+            ...(shape.type === "line" && {
+              x2: shape.x2,
+              y2: shape.y2,
+            }),
+            ...(shape.type === "text" && {
+              text: shape.text,
+              fontSize: shape.fontSize,
+              fontFamily: shape.fontFamily,
+              textAlign: shape.textAlign,
+              textBaseline: shape.textBaseline,
+            }),
+            ...(shape.type === "bezier" && {
+              endX: shape.endX,
+              endY: shape.endY,
+              cp1X: shape.cp1X,
+              cp1Y: shape.cp1Y,
+              cp2X: shape.cp2X,
+              cp2Y: shape.cp2Y,
+            }),
+          })),
         };
         
         return JSON.stringify(data, null, 2);
