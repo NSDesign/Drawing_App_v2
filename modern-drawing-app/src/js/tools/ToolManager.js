@@ -3,7 +3,8 @@ import { SelectTool } from './SelectTool.js';
 import { RectangleTool } from './RectangleTool.js';
 import { EllipseTool } from './EllipseTool.js';
 import { LineTool } from './LineTool.js';
-import { TextTool } from './TextTool.js';
+import { TextTool } from './TextVTool.js';
+import { BezierTool } from './BezierTool.js';
 import { PanTool } from './PanTool.js';
 
 export class ToolManager extends EventEmitter {
@@ -25,7 +26,7 @@ export class ToolManager extends EventEmitter {
         this.tools.set('line', new LineTool(this.state, this.renderer, this.commandManager));
         this.tools.set('text', new TextTool(this.state, this.renderer, this.commandManager));
         this.tools.set('pan', new PanTool(this.state, this.renderer));
-this.tools.set('bezier', new BezierTool(this.state, this.renderer, this.commandManager));
+        this.tools.set('bezier', new BezierTool(this.state, this.renderer, this.commandManager));
     }
 
     bindEvents() {
